@@ -1,7 +1,4 @@
 streamlit
+pandas
+openpyxl
 openai
-reportlab
-streamlit-chat
-markdown2
-python-docx
-pillow

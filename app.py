@@ -10,13 +10,14 @@ st.markdown("Creadora: Dra. J. Isabel Méndez Garduño")
 # Cargar base de datos
 df = pd.read_excel("materiales_energyplus.xlsx")
 
-# Inicializar estado para respuestas si no existe
+# Inicializar estado
 if "respuestas_ai" not in st.session_state:
     st.session_state.respuestas_ai = {}
 
-# Selección del material desde base de datos
+# === SECCIÓN 1: Consulta desde Excel ===
+st.subheader("📂 Consulta materiales precargados")
 materiales = df["Nombre"].tolist()
-seleccionados = st.multiselect("Selecciona uno o más materiales para consultar:", materiales)
+seleccionados = st.multiselect("Selecciona uno o más materiales:", materiales)
 
 if seleccionados:
     for nombre in seleccionados:
@@ -46,20 +47,40 @@ if seleccionados:
                 )
 
                 prompt = f"""
-Ficha técnica extendida del material de construcción: {nombre}.
-1. Composición química (si es inerte o emite algo), resistencia al fuego y a la corrosión.
-2. Origen del material, si es renovable o reciclado, y el impacto de su producción.
-3. Recomendaciones para su uso arquitectónico y mantenimiento, especificando si es adecuado para muros, techos, pisos, etc.
-Incluye datos numéricos siempre que sea posible. Usa fuentes confiables como literatura técnica o fichas de fabricantes. No le hagas preguntas después al usuario, sólo limítate a brindar la información.
+Genera una ficha técnica completa y detallada del siguiente material de construcción: {nombre}.
+
+1. 🧱 Propiedades Físicas:
+   - Nombre técnico en inglés
+   - Densidad en kg/m³
+   - Conductividad térmica en W/m·K
+   - Calor específico en J/kg·K
+   - Rugosidad superficial (Liso / Medio / Rugoso)
+   - Tipo de material (estructura, acabado, aislante, etc.)
+
+2. 🧪 Propiedades químicas y comportamiento:
+   - Composición química general
+   - Si es inerte o emite compuestos
+   - Resistencia al fuego y a la corrosión
+
+3. 🌱 Sostenibilidad y ciclo de vida:
+   - Origen (natural, sintético, reciclado)
+   - Impacto ambiental en producción y transporte
+   - Posibilidad de reutilización o reciclaje
+
+4. 🏗️ Recomendaciones arquitectónicas:
+   - Usos recomendados (muros, techos, pisos, etc.)
+   - Cuidados y mantenimiento
+   - Compatibilidad con climas cálidos/húmedos
+
+Proporciona valores numéricos realistas cuando sea posible. Usa formato claro y estructurado, sin hacer preguntas al usuario.
 """
 
                 messages = [
                     {
                         "role": "system",
                         "content": (
-                            "Eres un arquitecto y urbanista experto en arquitectura participativa, diseño sistémico y con perspectiva de género aplicado al contexto mexicano. "
-                            "Tienes experiencia en espacios educativos para infancia y adolescencia, incluyendo educación especial, educación inclusiva y accesibilidad universal. "
-                            "Dominas criterios de sostenibilidad, selección de materiales responsables, instalaciones educativas y viabilidad constructiva en contextos urbanos de México."
+                            "Eres un arquitecto experto en materiales, sostenibilidad y diseño accesible en México. "
+                            "Hablas en un lenguaje técnico y directo para estudiantes y profesionales de arquitectura."
                         )
                     },
                     {"role": "user", "content": prompt}
@@ -78,14 +99,12 @@ Incluye datos numéricos siempre que sea posible. Usa fuentes confiables como li
                 respuesta = completion.choices[0].message.content
                 st.session_state.respuestas_ai[nombre] = respuesta
                 st.success("Respuesta del mentor AI almacenada.")
-                st.info(respuesta)
+                st.markdown(respuesta)
 
             except Exception as e:
                 st.warning(f"No se pudo conectar con el Mentor AI. Error: {e}")
 
-# --------------------------------------------
-# 🔍 CONSULTA LIBRE A MENTOR AI PARA OTROS MATERIALES
-# --------------------------------------------
+# === SECCIÓN 2: Consulta libre ===
 st.markdown("---")
 st.subheader("🔍 ¿Quieres consultar otro material que no esté en la lista?")
 material_libre = st.text_input("Escribe el nombre del material a consultar:")
@@ -102,20 +121,40 @@ if material_libre:
             )
 
             prompt = f"""
-Ficha técnica extendida del material de construcción: {material_libre}.
-1. Composición química (si es inerte o emite algo), resistencia al fuego y a la corrosión.
-2. Origen del material, si es renovable o reciclado, y el impacto de su producción.
-3. Recomendaciones para su uso arquitectónico y mantenimiento, especificando si es adecuado para muros, techos, pisos, etc.
-Incluye datos numéricos siempre que sea posible. Usa fuentes confiables como literatura técnica o fichas de fabricantes. No le hagas preguntas después al usuario, sólo limítate a brindar la información.
+Genera una ficha técnica completa y detallada del siguiente material de construcción: {material_libre}.
+
+1. 🧱 Propiedades Físicas:
+   - Nombre técnico en inglés
+   - Densidad en kg/m³
+   - Conductividad térmica en W/m·K
+   - Calor específico en J/kg·K
+   - Rugosidad superficial (Liso / Medio / Rugoso)
+   - Tipo de material (estructura, acabado, aislante, etc.)
+
+2. 🧪 Propiedades químicas y comportamiento:
+   - Composición química general
+   - Si es inerte o emite compuestos
+   - Resistencia al fuego y a la corrosión
+
+3. 🌱 Sostenibilidad y ciclo de vida:
+   - Origen (natural, sintético, reciclado)
+   - Impacto ambiental en producción y transporte
+   - Posibilidad de reutilización o reciclaje
+
+4. 🏗️ Recomendaciones arquitectónicas:
+   - Usos recomendados (muros, techos, pisos, etc.)
+   - Cuidados y mantenimiento
+   - Compatibilidad con climas cálidos/húmedos
+
+Proporciona valores numéricos realistas cuando sea posible. Usa formato claro y estructurado, sin hacer preguntas al usuario.
 """
 
             messages = [
                 {
                     "role": "system",
                     "content": (
-                        "Eres un arquitecto y urbanista experto en arquitectura participativa, diseño sistémico y con perspectiva de género aplicado al contexto mexicano. "
-                        "Tienes experiencia en espacios educativos para infancia y adolescencia, incluyendo educación especial, educación inclusiva y accesibilidad universal. "
-                        "Dominas criterios de sostenibilidad, selección de materiales responsables, instalaciones educativas y viabilidad constructiva en contextos urbanos de México."
+                        "Eres un arquitecto experto en materiales, sostenibilidad y diseño accesible en México. "
+                        "Hablas en un lenguaje técnico y directo para estudiantes y profesionales de arquitectura."
                     )
                 },
                 {"role": "user", "content": prompt}
@@ -134,7 +173,7 @@ Incluye datos numéricos siempre que sea posible. Usa fuentes confiables como li
             respuesta = completion.choices[0].message.content
             st.session_state.respuestas_ai[material_libre] = respuesta
             st.success("Respuesta del mentor AI almacenada.")
-            st.info(respuesta)
+            st.markdown(respuesta)
 
         except Exception as e:
             st.warning(f"No se pudo conectar con el Mentor AI. Error: {e}")
